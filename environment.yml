@@ -1,0 +1,19 @@
+# personal development environment for MicroPython based projects on ESP boards
+name: espy
+dependencies:
+  - python=3
+  - ipython
+  - jupyter
+  - pre-commit
+  - black
+  - isort
+  - flake8
+  - mypy
+  - pip
+  - esptool
+  - docopt
+  # below are needed by ampy
+  - click
+  - python-dotenv
+  - pip:
+      - adafruit-ampy>=1.0.5,<1.1

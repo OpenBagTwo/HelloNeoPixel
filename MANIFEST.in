@@ -1,0 +1,2 @@
+include versioneer.py
+include hello_neopixel/_version.py
