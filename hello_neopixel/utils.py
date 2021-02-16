@@ -15,23 +15,26 @@ def convert_hue_to_rgb(hue: int) -> tuple:
         tuple of three ints : the RGB tuple corresponding to the given hue at
                               max saturation and brightness
     """
-    chroma = 255  # = value * saturation
-    hue_prime = hue / 60.0
+    try:
+        chroma = 255  # = value * saturation
+        hue_prime = hue / 60.0
 
-    intermediate = int(chroma * (1.0 - abs(hue_prime % 2.0 - 1.0)))
+        intermediate = round(chroma * (1.0 - abs(hue_prime % 2.0 - 1.0)))
 
-    if hue_prime >= 0.0:
-        if hue_prime <= 1.0:
-            return chroma, intermediate, 0
-        if hue_prime <= 2.0:
-            return intermediate, chroma, 0
-        if hue_prime <= 3.0:
-            return 0, chroma, intermediate
-        if hue_prime <= 4.0:
-            return 0, intermediate, chroma
-        if hue_prime <= 5.0:
-            return intermediate, 0, chroma
-        if hue_prime <= 6.0:
-            return chroma, 0, intermediate
+        if hue_prime >= 0.0:
+            if hue_prime <= 1.0:
+                return chroma, intermediate, 0
+            if hue_prime <= 2.0:
+                return intermediate, chroma, 0
+            if hue_prime <= 3.0:
+                return 0, chroma, intermediate
+            if hue_prime <= 4.0:
+                return 0, intermediate, chroma
+            if hue_prime <= 5.0:
+                return intermediate, 0, chroma
+            if hue_prime <= 6.0:
+                return chroma, 0, intermediate
+    except TypeError:
+        pass
 
-    raise ValueError("Hue must be between 0 and 360 (inclusive)")
+    raise ValueError("Hue must be an int between 0 and 360 (inclusive)")
