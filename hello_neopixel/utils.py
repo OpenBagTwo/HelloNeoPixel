@@ -1,0 +1,37 @@
+"""Utiliies for use in the main script"""
+
+
+def convert_hue_to_rgb(hue: int) -> tuple:
+    """Convert an HSV color of max saturation and brightness to its RGB
+    representation
+
+    Note:
+        Formula taken from https://en.wikipedia.org/wiki/HSL_and_HSV#HSV_to_RGB
+
+    Args:
+        hue (int): The hue value, in degrees
+
+    Returns:
+        tuple of three ints : the RGB tuple corresponding to the given hue at
+                              max saturation and brightness
+    """
+    chroma = 255  # = value * saturation
+    hue_prime = hue / 60.0
+
+    intermediate = int(chroma * (1.0 - abs(hue_prime % 2.0 - 1.0)))
+
+    if hue_prime >= 0.0:
+        if hue_prime <= 1.0:
+            return chroma, intermediate, 0
+        if hue_prime <= 2.0:
+            return intermediate, chroma, 0
+        if hue_prime <= 3.0:
+            return 0, chroma, intermediate
+        if hue_prime <= 4.0:
+            return 0, intermediate, chroma
+        if hue_prime <= 5.0:
+            return intermediate, 0, chroma
+        if hue_prime <= 6.0:
+            return chroma, 0, intermediate
+
+    raise ValueError("Hue must be between 0 and 360 (inclusive)")

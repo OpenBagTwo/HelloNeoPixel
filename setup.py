@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import find_namespace_packages, setup
 
 import versioneer
 
@@ -10,7 +10,7 @@ setup(
     ),
     author='Gili "OpenBagTwo" Barlev',
     url="https://github.com/OpenBagTwo/HelloNeoPixel",
-    packages=["hello_neopixel"],
+    packages=find_namespace_packages(),
     license="GPL v3",
     include_package_data=True,
     version=versioneer.get_version(),
