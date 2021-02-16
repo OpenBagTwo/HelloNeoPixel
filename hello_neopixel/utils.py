@@ -41,7 +41,7 @@ def convert_hue_to_rgb(hue: int) -> tuple:
 
 
 def crossfade(old_color: tuple, new_color: tuple, progress: float) -> tuple:
-    """
+    """Compute a crossfade between two RGB colors
 
     Args:
         old_color (tuple of three ints): the color you're fading from
