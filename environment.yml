@@ -9,6 +9,8 @@ dependencies:
   - isort
   - flake8
   - mypy
+  - pytest
+  - pytest-cov
   - pip
   - esptool
   - docopt
