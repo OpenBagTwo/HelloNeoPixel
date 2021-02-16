@@ -52,4 +52,12 @@ def crossfade(old_color: tuple, new_color: tuple, progress: float) -> tuple:
     Returns:
         tuple of three ints: the RGB tuple corresponding to the mixed color
     """
-    raise NotImplementedError
+    try:
+        assert 0.0 <= progress <= 1.0
+    except (TypeError, AssertionError):
+        raise ValueError("Progress must be a float between 0 and 1 (inclusive")
+
+    return tuple(
+        round(old_color[i] * (1.0 - progress) + new_color[i] * progress)
+        for i in range(3)
+    )

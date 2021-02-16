@@ -53,7 +53,7 @@ class TestCrossfade(TestCase):
 
         for i in range(3):
             self.assertLess(
-                abs(old_color[i] - faded[i], new_color[i] - faded[i])
+                abs(old_color[i] - faded[i]), abs(new_color[i] - faded[i])
             )
 
     def test_flipped_crossfades_are_equivalent(self):
