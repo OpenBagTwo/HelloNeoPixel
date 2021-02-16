@@ -1,4 +1,4 @@
-"""Utiliies for use in the main script"""
+"""Utilities for use in the main script"""
 
 
 def convert_hue_to_rgb(hue: int) -> tuple:
