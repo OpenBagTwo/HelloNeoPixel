@@ -1,4 +1,5 @@
 """Tests for utils module"""
+import unittest
 from unittest import TestCase
 
 from hello_neopixel import utils
@@ -99,3 +100,7 @@ class TestCrossfade(TestCase):
                     (0, 255, 0),
                     progress=invalid_value,
                 )
+
+
+if __name__ == "__main__":
+    unittest.main()
