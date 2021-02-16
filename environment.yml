@@ -19,3 +19,5 @@ dependencies:
   - python-dotenv
   - pip:
       - adafruit-ampy>=1.0.5,<1.1
+      # TODO: add pytest-subtests once this is resolved:
+      # https://github.com/pytest-dev/pytest-subtests/issues/26
