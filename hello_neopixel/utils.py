@@ -12,7 +12,7 @@ def convert_hue_to_rgb(hue: int) -> tuple:
         hue (int): The hue value, in degrees
 
     Returns:
-        tuple of three ints : the RGB tuple corresponding to the given hue at
+        tuple of three ints: the RGB tuple corresponding to the given hue at
                               max saturation and brightness
     """
     try:
@@ -38,3 +38,18 @@ def convert_hue_to_rgb(hue: int) -> tuple:
         pass
 
     raise ValueError("Hue must be an int between 0 and 360 (inclusive)")
+
+
+def crossfade(old_color: tuple, new_color: tuple, progress: float) -> tuple:
+    """
+
+    Args:
+        old_color (tuple of three ints): the color you're fading from
+        new_color (tuple of three ints): the color you're fading to
+        progress (float): the fraction (between 0 and 1) you are to the new
+                          color (0 = all old color, 1 = all new color)
+
+    Returns:
+        tuple of three ints: the RGB tuple corresponding to the mixed color
+    """
+    raise NotImplementedError
