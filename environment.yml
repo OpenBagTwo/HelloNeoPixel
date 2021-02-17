@@ -12,6 +12,7 @@ dependencies:
   - pytest
   - pytest-cov
   - pip
+  - micropython
   - esptool
   - docopt
   # below are needed by ampy
