@@ -1,8 +1,9 @@
 """Tests for utils module"""
-import unittest
-from unittest import TestCase
+from unittest import TestCase, main
 
 from hello_neopixel import utils
+
+__all__ = ["TestConvertHueToRGB", "TestCrossfade"]
 
 
 class TestConvertHueToRGB(TestCase):
@@ -15,15 +16,13 @@ class TestConvertHueToRGB(TestCase):
 
     def test_convert_hue_to_rgb_produces_expected_results(self):
         for hue, expected in self.parameters:
-            with self.subTest(hue):
-                self.assertEqual(expected, utils.convert_hue_to_rgb(hue))
+            self.assertEqual(expected, utils.convert_hue_to_rgb(hue))
 
-    def test_invalid_hue_raises_error(self):
+    def test_invalid_hues_raise_errors(self):
         for invalid_value in (-1, 451, "YInMn"):
-            with self.subTest(invalid_value):
-                self.assertRaises(
-                    ValueError, utils.convert_hue_to_rgb, invalid_value
-                )
+            self.assertRaises(
+                ValueError, utils.convert_hue_to_rgb, invalid_value
+            )
 
 
 class TestCrossfade(TestCase):
@@ -35,14 +34,9 @@ class TestCrossfade(TestCase):
 
         faded = utils.crossfade(old_color, new_color, progress=progress)
 
-        self.assertGreater(old_color[0], faded[0])
-        self.assertGreater(faded[0], new_color[0])
-
-        self.assertGreater(old_color[1], faded[1])
-        self.assertGreater(faded[1], new_color[1])
-
-        self.assertLess(old_color[2], faded[2])
-        self.assertLess(faded[2], new_color[2])
+        assert new_color[0] < faded[0] < old_color[0], "R not in expected range"
+        assert new_color[1] < faded[1] < old_color[1], "G not in expected range"
+        assert old_color[2] < faded[2] < new_color[2], "B not in expected range"
 
     def test_crossfade_under_half_produces_color_closer_to_the_old_color(self):
         progress = 0.2
@@ -53,9 +47,9 @@ class TestCrossfade(TestCase):
         faded = utils.crossfade(old_color, new_color, progress=progress)
 
         for i in range(3):
-            self.assertLess(
-                abs(old_color[i] - faded[i]), abs(new_color[i] - faded[i])
-            )
+            assert abs(old_color[i] - faded[i]) < abs(
+                new_color[i] - faded[i]
+            ), "Faded {} is closer to new color".format("RGB"[i])
 
     def test_flipped_crossfades_are_equivalent(self):
         progress = 0.8
@@ -92,15 +86,14 @@ class TestCrossfade(TestCase):
     def test_invalid_progress_raises_error(self):
 
         for invalid_value in (-0.1, 32, "congress"):
-            with self.subTest(invalid_value):
-                self.assertRaises(
-                    ValueError,
-                    utils.crossfade,
-                    (255, 0, 0),
-                    (0, 255, 0),
-                    progress=invalid_value,
-                )
+            self.assertRaises(
+                ValueError,
+                utils.crossfade,
+                (255, 0, 0),
+                (0, 255, 0),
+                progress=invalid_value,
+            )
 
 
 if __name__ == "__main__":
-    unittest.main()
+    main()
