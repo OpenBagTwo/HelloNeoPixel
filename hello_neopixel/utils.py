@@ -13,7 +13,7 @@ def convert_hue_to_rgb(hue: int) -> tuple:
 
     Returns:
         tuple of three ints: the RGB tuple corresponding to the given hue at
-                              max saturation and brightness
+                             max saturation and brightness
     """
     try:
         chroma = 255  # = value * saturation
