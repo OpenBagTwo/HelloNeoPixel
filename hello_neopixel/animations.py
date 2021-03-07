@@ -2,13 +2,12 @@
 import random
 
 import utime
-from neopixel import NeoPixel
 
 from . import utils
 
 
 def random_cycle(
-    light_strip: NeoPixel,
+    light_strip,  # TODO: hint as NeoPixel without importing neopixel
     runtime: float = None,
     transition_time: float = 1.0,
     frame_rate: float = 60.0,
