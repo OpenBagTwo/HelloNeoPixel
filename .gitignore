@@ -141,3 +141,4 @@ cython_debug/
 .idea
 
 # folder for demo files
+scratch
