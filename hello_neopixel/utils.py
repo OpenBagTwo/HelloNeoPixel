@@ -79,3 +79,7 @@ def render_runner(color: tuple, position: float, pixel_num: int) -> tuple:
         tuple of three ints : the RGB value that should be rendered at the given
                               pixel
     """
+    distance = abs(position - pixel_num)
+    if distance > 1.0:
+        return (0, 0, 0)
+    return crossfade((0, 0, 0), color, 1.0 - distance)
