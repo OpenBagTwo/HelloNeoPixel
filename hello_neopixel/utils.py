@@ -61,3 +61,21 @@ def crossfade(old_color: tuple, new_color: tuple, progress: float) -> tuple:
         round(old_color[i] * (1.0 - progress) + new_color[i] * progress)
         for i in range(3)
     )
+
+
+def render_runner(color: tuple, position: float, pixel_num: int) -> tuple:
+    """For a "runner" with the given color that should be "located" at a given
+    point on the LED strip, return the rgb value that should be displayed at the
+    given pixel position.
+
+    Args:
+        color (tuple of three ints) : the color of the runner
+        position (float) : the position of the runner
+        pixel_num (int) : the index of the pixel on the LED strip (or,
+                          alternatively, think of it as the "position" of the
+                          LED strip pixel)
+
+    Returns:
+        tuple of three ints : the RGB value that should be rendered at the given
+                              pixel
+    """

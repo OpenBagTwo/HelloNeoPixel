@@ -95,5 +95,24 @@ class TestCrossfade(TestCase):
             )
 
 
+class TestRenderRunner(TestCase):
+    def test_pixel_stays_blank_when_runner_is_too_far_left(self):
+        color = (255, 128, 173)
+        self.assertEqual((0, 0, 0), utils.render_runner(color, -1.2, 0))
+
+    def test_pixel_stays_blank_when_runner_is_too_far_right(self):
+        color = (102, 255, 102)
+        self.assertEqual((0, 0, 0), utils.render_runner(color, 5, 3))
+
+    def test_pixels_surrounding_runner_add_up_to_color(self):
+        color = (217, 179, 255)
+        pixel_left = utils.render_runner(color, 3.6, 3)
+        pixel_right = utils.render_runner(color, 3.6, 4)
+
+        pixel_sum = tuple(pixel_left[i] + pixel_right[i] for i in range(3))
+
+        self.assertEqual(color, pixel_sum)
+
+
 if __name__ == "__main__":
     main()
