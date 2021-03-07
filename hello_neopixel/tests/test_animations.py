@@ -33,6 +33,12 @@ class FakeNeoPixel:
     def __getitem__(self, index: int) -> tuple:
         return self._pending_pixels[index]
 
+    def __setitem__(self, index: int, value: tuple) -> None:
+        # TODO: is typing available for uPython?
+        #       alternatively, is there a more primitive way to hint at
+        #       "tuple of three ints"?
+        self._pending_pixels[index] = value  # type: ignore[assignment]
+
     def write(self):
         for i in range(self.n):
             self._live_pixels[i] = self._pending_pixels[i]
