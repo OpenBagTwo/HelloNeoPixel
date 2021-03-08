@@ -1,9 +1,16 @@
 """Library of animations"""
-import random
-
+import urandom
 import utime
 
 from . import utils
+
+try:
+    random = urandom.random
+except AttributeError:
+    """Workaround for MicroPython on the desktop not having random.random()"""
+    random = (
+        lambda: urandom.getrandbits(8) / 2 ** 8
+    )  # way more resolution than we need
 
 
 def random_cycle(
@@ -38,7 +45,7 @@ def random_cycle(
     colors = []
 
     for i in range(n_pixels):
-        hue = int(random.random() * 360)
+        hue = int(random() * 360)
         rgb = utils.convert_hue_to_rgb(hue)
         colors.append(rgb)
 
