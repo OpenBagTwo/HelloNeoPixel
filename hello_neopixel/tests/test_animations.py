@@ -2,7 +2,9 @@
 Of course, the best test of any animation is how it looks on the strip."""
 from unittest import TestCase, main
 
-from hello_neopixel import animations as ani  # noqa: F401
+import utime
+
+from hello_neopixel import animations as ani
 
 
 class FakeNeoPixel:
@@ -45,8 +47,15 @@ class FakeNeoPixel:
 
 
 class TestRandomCycle(TestCase):
-    # TODO
-    pass
+    def test_runtime_is_in_seconds(self):
+        fake_neopixel = FakeNeoPixel(5)
+        start = utime.ticks_ms()
+        ani.random_cycle(fake_neopixel, runtime=0.1, frame_rate=1000)
+        duration = utime.ticks_diff(utime.ticks_ms(), start) / 1000
+
+        assert (
+            0.1 <= duration < 0.15  # allow 50ms for computation outside loop
+        ), "random_cycle animation ran for {} seconds".format(duration)
 
 
 if __name__ == "__main__":
