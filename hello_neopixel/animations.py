@@ -53,10 +53,10 @@ def random_cycle(
 
     try:
         while True:
-            current_time = utime.ticks_diff(utime.ticks_ms(), start_time)
-            pixel_shift = int(current_time / transition_time / 1000) % n_pixels
+            current_time = utime.ticks_diff(utime.ticks_ms(), start_time) / 1000
+            pixel_shift = int(current_time / transition_time) % n_pixels
 
-            shift_progress = (current_time / transition_time / 1000) % 1
+            shift_progress = (current_time / transition_time) % 1
 
             for i in range(n_pixels):
                 light_strip[i] = utils.crossfade(
