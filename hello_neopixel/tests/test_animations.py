@@ -128,9 +128,9 @@ class TestRandomCycle(TestCase):
         fake_neopixel = FakeNeoPixel(3)
         ani.random_cycle(
             fake_neopixel,
-            frame_rate=20,
-            transition_time=0.2,  # theoretically 4 frames
-            runtime=0.499,
+            frame_rate=10,
+            transition_time=0.4,  # theoretically 4 frames
+            runtime=0.999,
         )  # expecting 10 frames total
 
         start_frames_to_check = (0, 3, 4, 6)
