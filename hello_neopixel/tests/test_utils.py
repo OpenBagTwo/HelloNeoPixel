@@ -9,7 +9,7 @@ __all__ = ["TestConvertHueToRGB", "TestCrossfade"]
 class TestConvertHueToRGB(TestCase):
 
     parameters = (  # (hue, expected)
-        (214, (0, 110, 255)),
+        (213, (0, 115, 255)),
         (11, (255, 47, 0)),
         (148, (0, 255, 119)),
     )
