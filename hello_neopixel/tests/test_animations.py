@@ -1,4 +1,4 @@
-"""Placeholder for tests for the various animations.
+"""Tests for the various animations.
 Of course, the best test of any animation is how it looks on the strip."""
 from unittest import TestCase, main
 
@@ -79,8 +79,8 @@ class TestRandomCycle(TestCase):
             ), "pixel {} was not blanked".format(i)
 
     def test_clear_after_false_leaves_pixels_illuminated(self):
-        """taking advantage of the fact that all random colors are max brightness
-        and saturation"""
+        """taking advantage of the fact that all random colors are
+        max brightness and saturation"""
         fake_neopixel = FakeNeoPixel(5)
         ani.random_cycle(
             fake_neopixel, runtime=0.1, frame_rate=100, clear_after=False
