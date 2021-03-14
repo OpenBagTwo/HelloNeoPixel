@@ -72,7 +72,6 @@ class AsciiPixel:
                                       be changed later.
 
         """
-        self.n = n_pixels  # TODO: make this a property?
         self.animate_mode = animate
         self._background_color = strip_color
         self._pixel_spacing = pixel_spacing
@@ -90,6 +89,13 @@ class AsciiPixel:
         #       alternatively, is there a more primitive way to hint at
         #       "tuple of three ints"?
         self._pixels[index] = value  # type: ignore[assignment]
+
+    def __len__(self) -> int:
+        return len(self._pixels)
+
+    @property
+    def n(self) -> int:
+        return len(self)
 
     def write(self, output_to=None):  # TODO: type hint?
         """Emulation of the NeoPixel write function which, in this case,
