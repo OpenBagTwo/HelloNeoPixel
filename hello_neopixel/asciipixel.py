@@ -121,5 +121,10 @@ class AsciiPixel:
         ]
 
         print(
-            header + spacer + spacer.join(text_pixels) + spacer, **print_kwargs
+            header
+            + spacer
+            + spacer.join(text_pixels)
+            + spacer
+            + RESET_SEQUENCE,
+            **print_kwargs
         )
