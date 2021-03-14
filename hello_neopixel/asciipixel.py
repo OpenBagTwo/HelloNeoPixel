@@ -1,5 +1,4 @@
 """Virtual terminal-based NeoPixel implementation"""
-
 RESET_SEQUENCE = "\033[0m"
 PIXEL_CHARACTER = "\u2b24"  # https://www.compart.com/en/unicode/U+2B24
 
@@ -92,8 +91,25 @@ class AsciiPixel:
         #       "tuple of three ints"?
         self._pixels[index] = value  # type: ignore[assignment]
 
-    def write(self):
+    def write(self, output_to=None):  # TODO: type hint?
+        """Emulation of the NeoPixel write function which, in this case,
+        renders the virtual strip to stdout
+
+        Args:
+            output_to (stream, optional):  If you'd like to display the virtual
+                                           pixel to somewhere else besides
+                                           stdout, provide your desired
+                                           output stream to this argument.
+
+        Returns:
+            None
+        """
         spacer = " " * self._pixel_spacing
+        print_kwargs = {}
+        if self.animate_mode:
+            print_kwargs["end"] = "\r"
+        if output_to is not None:
+            print_kwargs["file"] = output_to
 
         header = convert_rgb_to_ansi_escape(
             self._background_color, "background"
@@ -105,6 +121,5 @@ class AsciiPixel:
         ]
 
         print(
-            header + spacer + spacer.join(text_pixels) + spacer,
-            end="\r" if self.animate_mode else "\n",
+            header + spacer + spacer.join(text_pixels) + spacer, **print_kwargs
         )
