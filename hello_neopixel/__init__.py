@@ -7,3 +7,4 @@ except ImportError:
     __version__ = "0+unknown"
 
 from .animations import *  # noqa: F401, F403
+from .asciipixel import AsciiPixel  # noqa: F401
