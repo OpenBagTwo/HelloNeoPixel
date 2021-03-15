@@ -40,7 +40,7 @@ def random_cycle(
         None
     """
     n_pixels = light_strip.n
-    step_time = int(1000 / frame_rate)  # ms to sleep between steps
+    step_time_us = int(1e6 / frame_rate)  # us between steps
 
     colors = []
 
@@ -53,6 +53,7 @@ def random_cycle(
 
     try:
         while True:
+            step_start_tick_us = utime.ticks_us()
             current_time = utime.ticks_diff(utime.ticks_ms(), start_time) / 1000
             pixel_shift = int(current_time / transition_time) % n_pixels
 
@@ -67,10 +68,15 @@ def random_cycle(
             light_strip.write()
 
             # TODO: see if uPython has math.nan
-            if runtime is not None and current_time > runtime:
+            if (
+                runtime is not None
+                and current_time + step_time_us / 1e6 > runtime
+            ):
                 break
 
-            utime.sleep_ms(step_time)
+            compute_time_us = utime.ticks_us() - step_start_tick_us
+
+            utime.sleep_us(step_time_us - compute_time_us)
     finally:
         if clear_after:
             for i in range(n_pixels):

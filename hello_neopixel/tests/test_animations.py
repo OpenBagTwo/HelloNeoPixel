@@ -120,9 +120,10 @@ class TestRandomCycle(TestCase):
             runtime=0.499,  # slightly less than divisible by frame rate
             clear_after=False,
         )
-        self.assertEqual(
-            10, len(fake_neopixel.write_log) - baseline_write_count
-        )
+
+        # so not counting that (maybe) first write, we expect it to step
+        # forward 9 times before terminating
+        self.assertEqual(len(fake_neopixel.write_log) - baseline_write_count, 9)
 
     def test_colors_are_shifted_by_one_pixel_after_transition_time(self):
         fake_neopixel = FakeNeoPixel(3)
@@ -133,7 +134,7 @@ class TestRandomCycle(TestCase):
             runtime=0.999,
         )  # expecting 10 frames total
 
-        start_frames_to_check = (0, 3, 4, 6)
+        start_frames_to_check = (0, 3, 4, 5)
         for start_frame in start_frames_to_check:
             end_frame = start_frame + 4
             for i in range(fake_neopixel.n):
@@ -145,7 +146,11 @@ class TestRandomCycle(TestCase):
                     # allow a little wiggle room
                     assert abs(start_pixel[j] - end_pixel[j]) < 10, (
                         "Pixels not properly shifted between frames"
-                        " {} and {}".format(start_frame, end_frame)
+                        " {} and {}."
+                        "\nFor example, at the latter frame,"
+                        " pixel {} is {} when it should be {}".format(
+                            start_frame, end_frame, i, start_pixel, end_pixel
+                        )
                     )
 
 
