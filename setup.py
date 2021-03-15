@@ -10,7 +10,7 @@ setup(
     ),
     author='Gili "OpenBagTwo" Barlev',
     url="https://github.com/OpenBagTwo/HelloNeoPixel",
-    packages=find_namespace_packages(),
+    packages=find_namespace_packages(include=("hello_neopixel*",)),
     license="GPL v3",
     include_package_data=True,
     version=versioneer.get_version(),
