@@ -5,10 +5,56 @@ from unittest import TestCase, main
 import utime
 
 from hello_neopixel import animations as ani
+from hello_neopixel.base import Pixel
 
 from .mockpixel import MockPixel
 
-__all__ = ["TestRandomCycle"]
+__all__ = ["TestBlink", "TestRandomCycle"]
+
+
+class TestBlink(TestCase):
+    def test_blink_takes_a_single_pixel(self):
+        light_strip = [None]
+        pixel = Pixel(light_strip, 0)
+        blink = ani.Blink(pixel, (255, 255, 255))
+        self.assertIs(blink.pixels[0], pixel)
+
+    def test_blink_sets_the_specified_color(self):
+        light_strip = [None]
+        pixel = Pixel(light_strip, 0)
+        blink = ani.Blink(pixel, ("magenta",))
+        blink.render(0.2)
+        self.assertEqual(light_strip[0], ("magenta",))
+
+    def test_blink_respects_custom_blanks(self):
+        light_strip = [None]
+        pixel = Pixel(light_strip, 0, blank_value=("turn", "me", "off"))
+        blink = ani.Blink(pixel, (12, 34, 56))
+        blink.render(0.7)
+        self.assertEqual(light_strip[0], ("turn", "me", "off"))
+
+    def test_blink_works_after_a_ton_of_cycles(self):
+        light_strip = [None]
+        pixel = Pixel(light_strip, 0, blank_value=(0,))
+        blink = ani.Blink(pixel, (1,))
+        blink.render(228.3)
+        self.assertEqual(light_strip[0], (1,))
+        blink.render(78927.9)
+        self.assertEqual(light_strip[0], (0,))
+
+    def test_blink_can_have_a_custom_period(self):
+        light_strip = [None]
+        pixel = Pixel(light_strip, 0, blank_value=(0,))
+        blink = ani.Blink(pixel, (1,), period=100.0)
+        blink.render(48.9)
+        self.assertEqual(light_strip[0], (1,))
+
+    def test_blink_can_have_a_custom_duty_cycle(self):
+        light_strip = [None]
+        pixel = Pixel(light_strip, 0, blank_value=(0,))
+        blink = ani.Blink(pixel, (1,), duty_cycle=0.1)
+        blink.render(0.2)
+        self.assertEqual(light_strip[0], (0,))
 
 
 class TestRandomCycle(TestCase):

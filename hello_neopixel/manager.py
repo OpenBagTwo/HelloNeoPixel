@@ -1,3 +1,4 @@
+"""Recipes for choreographing animations"""
 import utime
 
 

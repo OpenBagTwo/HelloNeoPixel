@@ -14,6 +14,48 @@ except AttributeError:
     )  # way more resolution than we need
 
 
+class Blink(Animation):
+    """Probably the simplest possible animation. Blinks a single pixel a single
+    color on and off.
+
+    Attributes:
+        color: the color used for the animation
+    """
+
+    def __init__(
+        self,
+        pixel: Pixel,
+        color: tuple,
+        period: float = 1.0,
+        duty_cycle: float = 0.5,
+    ) -> None:
+        """Initialize the animation
+
+        Args:
+            pixel (Pixel):
+                the pixel (LED) to be used
+            color (tuple of three ints for RGB):
+                the "on" color for the pixel
+            period (float):
+                The time (in seconds) for a complete on/off cycle.
+                Default is 1.0 seconds.
+            duty_cycle (float):
+                The fraction (between 0 and 1) of the time the pixel should be
+                on. Default is 0.5 (equal times on and off).
+        """
+        super().__init__((pixel,))
+        self.color = color
+        self.period = period
+        self.duty_cycle = duty_cycle
+
+    def render(self, current_time: float) -> None:
+        cycle_point = (current_time % self.period) / self.period
+        if cycle_point < self.duty_cycle:
+            self.pixels[0].set(self.color)
+        else:
+            self.pixels[0].blank()
+
+
 class RandomCycle(Animation):
     """An animation which starts by generating a random color for each pixel
     on the strip and then moves each color around the strip in a loop.
@@ -22,7 +64,7 @@ class RandomCycle(Animation):
         colors (list of three-int tuples): the colors used for the animation
     """
 
-    def __init__(self, pixels, transition_time: float = 1.0):
+    def __init__(self, pixels, transition_time: float = 1.0) -> None:
         """Initialize the animation
 
         Args:
