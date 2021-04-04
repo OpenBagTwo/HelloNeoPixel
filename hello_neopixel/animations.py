@@ -99,7 +99,7 @@ class Animation:
 
         Args:
             current_time (float) : the time (in seconds) since the animation
-            started
+                                   started
 
         Returns:
             None
