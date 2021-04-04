@@ -63,7 +63,7 @@ class Pixel:
         self.light_strip[self._index] = color
 
     def blank(self) -> None:
-        """Blank (turn off) the pixel
+        """Blank the pixel (set the color to "off")
 
         Notes:
             This function does not actually "write" the off command (that is,
