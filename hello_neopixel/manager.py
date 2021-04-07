@@ -52,8 +52,8 @@ def run_animations(
                 break
 
             compute_time_us = utime.ticks_us() - step_start_tick_us
-
-            utime.sleep_us(step_time_us - compute_time_us)
+            if compute_time_us < step_time_us:
+                utime.sleep_us(step_time_us - compute_time_us)
     finally:
         if clear_after:
             for pixel in pixels:

@@ -110,7 +110,7 @@ class TestRunAnimations(TestCase):
             )
             self.assertEqual(len(light_strip.write_log), 7)
 
-    def test_does_its_best_when_render_time_exceeds_frame_rate(self):
+    def test_does_its_best_when_render_time_exceeds_step_time(self):
         light_strip = MockPixel(1)
         animation = self.SleepyAnimation(
             [Pixel(light_strip, 0)], render_time_ms=50
