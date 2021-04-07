@@ -155,6 +155,18 @@ class TestRandomCycle(TestCase):
                         )
                     )
 
+    def test_accepts_a_list_of_pixels(self):
+        fake_neopixel = MockPixel(5)
+        light_strip = [Pixel(fake_neopixel, i) for i in range(5)]
+        ani.random_cycle(
+            light_strip, runtime=0.1, frame_rate=100, clear_after=False
+        )
+        blank = (0, 0, 0)
+        for i in range(fake_neopixel.n):
+            assert (
+                fake_neopixel.displayed_pixels[i] != blank
+            ), "pixel {} was blanked".format(i)
+
 
 if __name__ == "__main__":
     main()

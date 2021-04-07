@@ -112,7 +112,8 @@ def random_cycle(
     """Generates a random color for each pixel and cycles them across the strip
 
     Args:
-        light_strip (NeoPixel): the individually addressable light strip
+        light_strip (NeoPixel or list of Pixels):
+            the individually addressable light strip
         runtime (float, optional): how long the animation should run before
                                    terminating (in seconds). If None is
                                    specified, the animation will run
@@ -128,6 +129,9 @@ def random_cycle(
     Returns:
         None
     """
-    pixels = [Pixel(light_strip, i) for i in range(light_strip.n)]
+    if isinstance(light_strip[0], Pixel):
+        pixels = light_strip
+    else:
+        pixels = [Pixel(light_strip, i) for i in range(light_strip.n)]
     animation = RandomCycle(pixels, transition_time)
     run_animations([animation], runtime, frame_rate, clear_after)
