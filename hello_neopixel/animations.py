@@ -142,7 +142,7 @@ class BeeFace(Animation):
     illuminated using individual NeoPixels. The animation alternates the bee's
     face between passive and angry.
 
-    The face is on a 5 x 6 square grid laid out as follows:
+    The face is on a 6 x 5 square grid laid out as follows:
 
     + -- + -- + -- + -- + -- +
     | YL | YL | YL | YL | YL |
