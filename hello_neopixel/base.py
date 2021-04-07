@@ -2,7 +2,7 @@
 
 
 class Pixel:
-    """An encapsulation of an light strip pixel.
+    """Encapsulation of a pixel on a light strip.
 
     Since NeoPixel color values are generally written via direct assignment,
     e.g.
@@ -17,13 +17,12 @@ class Pixel:
 
     let alone easily work with pixels on different strips.
 
-    This class attempts to solve for that by taking a light strip and the index
-    of an LED on that strip, wrapping them, and providing an access method
+    This class attempts to solve for that by wrapping a light strip and
+    the index of an LED on that strip and providing an access method
     for setting their values, a la
 
         >>> for pixel in pixels:
         ...    pixel.set((0, 255, 0))
-
     """
 
     def __init__(
