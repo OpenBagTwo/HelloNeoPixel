@@ -6,5 +6,7 @@ try:
 except ImportError:
     __version__ = "0+unknown"
 
-from .animations import *  # noqa: F401, F403
+from .animations import random_cycle  # noqa: F401
 from .asciipixel import AsciiPixel  # noqa: F401
+from .base import Animation, Pixel  # noqa: F401
+from .manager import run_animations  # noqa: F401

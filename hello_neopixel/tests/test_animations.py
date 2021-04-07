@@ -5,59 +5,61 @@ from unittest import TestCase, main
 import utime
 
 from hello_neopixel import animations as ani
+from hello_neopixel.base import Pixel
+
+from .mockpixel import MockPixel
+
+__all__ = ["TestBlink", "TestRandomCycle"]
 
 
-class FakeNeoPixel:
-    """Mock NeoPixel to use for testing
+class TestBlink(TestCase):
+    def test_blink_takes_a_single_pixel(self):
+        light_strip = [None]
+        pixel = Pixel(light_strip, 0)
+        blink = ani.Blink(pixel, (255, 255, 255))
+        self.assertIs(blink.pixels[0], pixel)
 
-    Attributes:
-        n (int) : the number of pixels
-        write_log (list of list of three-int tuples):
-            recording of every set of pixels that were ever written to the strip
-    """
+    def test_blink_sets_the_specified_color(self):
+        light_strip = [None]
+        pixel = Pixel(light_strip, 0)
+        blink = ani.Blink(pixel, ("magenta",))
+        blink.render(0.2)
+        self.assertEqual(light_strip[0], ("magenta",))
 
-    def __init__(self, n_pixels: int) -> None:
-        """Initialize a mock light strip
+    def test_blink_respects_custom_blanks(self):
+        light_strip = [None]
+        pixel = Pixel(light_strip, 0, blank_value=("turn", "me", "off"))
+        blink = ani.Blink(pixel, (12, 34, 56))
+        blink.render(0.7)
+        self.assertEqual(light_strip[0], ("turn", "me", "off"))
 
-        Args:
-            n_pixels (int) : the number of pixels in your virtual strip
-        """
-        self.n = n_pixels
-        self._pending_pixels = [(0, 0, 0) for _ in range(n_pixels)]
-        self.write_log = []  # type: list
+    def test_blink_works_after_a_ton_of_cycles(self):
+        light_strip = [None]
+        pixel = Pixel(light_strip, 0, blank_value=(0,))
+        blink = ani.Blink(pixel, (1,))
+        blink.render(228.3)
+        self.assertEqual(light_strip[0], (1,))
+        blink.render(78927.9)
+        self.assertEqual(light_strip[0], (0,))
 
-    def __iter__(self):
-        for pixel in self._pending_pixels:
-            yield pixel
+    def test_blink_can_have_a_custom_period(self):
+        light_strip = [None]
+        pixel = Pixel(light_strip, 0, blank_value=(0,))
+        blink = ani.Blink(pixel, (1,), period=100.0)
+        blink.render(48.9)
+        self.assertEqual(light_strip[0], (1,))
 
-    def __getitem__(self, index: int) -> tuple:
-        return self._pending_pixels[index]
-
-    def __setitem__(self, index: int, value: tuple) -> None:
-        # TODO: is typing available for uPython?
-        #       alternatively, is there a more primitive way to hint at
-        #       "tuple of three ints"?
-        self._pending_pixels[index] = value  # type: ignore[assignment]
-
-    def write(self) -> None:
-        """Emulate the NeoPixel write operation by "displaying" the set values.
-        This is done by logging writing the pending pixels to a log.
-        """
-        self.write_log.append(list(self))
-
-    @property
-    def displayed_pixels(self) -> list:
-        """list of three-int tuples :  the pixel RGB values that were last
-        "written" to the virtual strip
-        """
-        if len(self.write_log) == 0:
-            return [(0, 0, 0) for i in range(self.n)]
-        return self.write_log[-1]
+    def test_blink_can_have_a_custom_duty_cycle(self):
+        light_strip = [None]
+        pixel = Pixel(light_strip, 0, blank_value=(0,))
+        blink = ani.Blink(pixel, (1,), duty_cycle=0.1)
+        blink.render(0.2)
+        self.assertEqual(light_strip[0], (0,))
 
 
 class TestRandomCycle(TestCase):
     def test_runtime_is_in_seconds(self):
-        fake_neopixel = FakeNeoPixel(5)
+        fake_neopixel = MockPixel(5)
         start = utime.ticks_ms()
         ani.random_cycle(fake_neopixel, runtime=0.1, frame_rate=1000)
         duration = utime.ticks_diff(utime.ticks_ms(), start) / 1000
@@ -67,7 +69,7 @@ class TestRandomCycle(TestCase):
         ), "random_cycle animation ran for {} seconds".format(duration)
 
     def test_clear_after_leaves_pixels_blank(self):
-        fake_neopixel = FakeNeoPixel(5)
+        fake_neopixel = MockPixel(5)
         ani.random_cycle(
             fake_neopixel, runtime=0.1, frame_rate=100, clear_after=True
         )
@@ -81,7 +83,7 @@ class TestRandomCycle(TestCase):
     def test_clear_after_false_leaves_pixels_illuminated(self):
         """taking advantage of the fact that all random colors are
         max brightness and saturation"""
-        fake_neopixel = FakeNeoPixel(5)
+        fake_neopixel = MockPixel(5)
         ani.random_cycle(
             fake_neopixel, runtime=0.1, frame_rate=100, clear_after=False
         )
@@ -92,7 +94,7 @@ class TestRandomCycle(TestCase):
             ), "pixel {} was blanked".format(i)
 
     def test_clear_after_is_default_behavior(self):
-        fake_neopixel = FakeNeoPixel(5)
+        fake_neopixel = MockPixel(5)
         ani.random_cycle(fake_neopixel, runtime=0.1, frame_rate=100)
 
         blank = (0, 0, 0)
@@ -106,14 +108,14 @@ class TestRandomCycle(TestCase):
         # first run a neopixel that should terminate immediately
         # (to account for the fact that the animation MAY OR MAY NOT display
         # once before checking the time)
-        baseline_neopixel = FakeNeoPixel(2)
+        baseline_neopixel = MockPixel(2)
         ani.random_cycle(baseline_neopixel, runtime=-1, clear_after=False)
         baseline_write_count = len(baseline_neopixel.write_log)
 
         # doubt I'm actually this memory-limited but shouldn't hurt
         del baseline_neopixel
 
-        fake_neopixel = FakeNeoPixel(2)
+        fake_neopixel = MockPixel(2)
         ani.random_cycle(
             fake_neopixel,
             frame_rate=60,
@@ -126,7 +128,7 @@ class TestRandomCycle(TestCase):
         self.assertEqual(len(fake_neopixel.write_log) - baseline_write_count, 9)
 
     def test_colors_are_shifted_by_one_pixel_after_transition_time(self):
-        fake_neopixel = FakeNeoPixel(3)
+        fake_neopixel = MockPixel(3)
         ani.random_cycle(
             fake_neopixel,
             frame_rate=20,
@@ -152,6 +154,18 @@ class TestRandomCycle(TestCase):
                             start_frame, end_frame, i, start_pixel, end_pixel
                         )
                     )
+
+    def test_accepts_a_list_of_pixels(self):
+        fake_neopixel = MockPixel(5)
+        light_strip = [Pixel(fake_neopixel, i) for i in range(5)]
+        ani.random_cycle(
+            light_strip, runtime=0.1, frame_rate=100, clear_after=False
+        )
+        blank = (0, 0, 0)
+        for i in range(fake_neopixel.n):
+            assert (
+                fake_neopixel.displayed_pixels[i] != blank
+            ), "pixel {} was blanked".format(i)
 
 
 if __name__ == "__main__":
