@@ -112,7 +112,7 @@ def random_cycle(
     """Generates a random color for each pixel and cycles them across the strip
 
     Args:
-        light_strip (NeoPixel or list of Pixels):
+        light_strip (NeoPixel or list-like of Pixels):
             the individually addressable light strip
         runtime (float, optional): how long the animation should run before
                                    terminating (in seconds). If None is
@@ -135,3 +135,85 @@ def random_cycle(
         pixels = [Pixel(light_strip, i) for i in range(light_strip.n)]
     animation = RandomCycle(pixels, transition_time)
     run_animations([animation], runtime, frame_rate, clear_after)
+
+
+class BeeFace(Animation):
+    """A two-frame animation for a Minecraft bee face where the cheeks are
+    illuminated using individual NeoPixels. The animation alternates the bee's
+    face between passive and angry.
+
+    The face is on a 5 x 6 square grid laid out as follows:
+
+    + -- + -- + -- + -- + -- +
+    | YL | YL | YL | YL | YL |
+    | YL | BK | YL | BL | YL |
+    | YL | YL | YL | YL | YL |
+    |  4 |  5 | YL |  6 |  7 |
+    |  3 |  2 | YL |  9 |  8 |
+    |  0 |  1 | YL | 11 | 10 |
+    + -- + -- + -- + -- + -- +
+
+    where cells:
+      - marked YL are colored yellow
+      - cells marked BK are colored black
+      - cells marked BL are colored blue
+      - cells colored RD are colored red
+      - cells colored WT are colored white
+      - numbered cells are transparent and backed by an individually addressable
+        LED.
+
+    The two frames of the animation are:
+
+    Passive:                          Angry:
+    + -- + -- + -- + -- + -- +        + -- + -- + -- + -- + -- +
+    | YL | YL | YL | YL | YL |        | YL | YL | YL | YL | YL |
+    | YL | BK | YL | BL | YL |        | YL | BK | YL | BL | YL |
+    | YL | YL | YL | YL | YL |        | YL | YL | YL | YL | YL |
+    | BK | BL | YL | BL | BK |        | RD | WT | YL | WT | RD |
+    | BK | BK | YL | BK | BK |        | RD | RD | YL | RD | RD |
+    | BK | BK | YL | BK | BK |        | YL | YL | YL | YL | YL |
+    + -- + -- + -- + -- + -- +        + -- + -- + -- + -- + -- +
+
+    And thus, the LEDs need to be colored:
+
+    Passive:
+        [BK, BK, BK, BK, BK, BL, BL, BK, BK, BK, Bk, BK]
+    Angry:
+        [YL, YL, RD, RD, RD, WT, WT, RD, RD, RD, YL, YL]
+    """
+
+    BLACK = (0, 0, 0)
+    WHITE = (50, 50, 50)
+    RED = (150, 0, 0)
+    BLUE = (10, 70, 70)
+    YELLOW = (80, 60, 0)
+
+    # take advantage of the fact that the cheeks are symmetric
+    PASSIVE_CHEEK = (*[BLACK] * 5, BLUE)
+    ANGRY_CHEEK = (*[YELLOW] * 2, *[RED] * 3, WHITE)
+
+    def __init__(
+        self, pixels, period: float = 10.0, duty_cycle: float = 0.5
+    ) -> None:
+        """Initialize the animation
+
+        Args:
+            pixels (list-like of 12 Pixels):
+                The pixels that will be used to render the animation. The can be
+                attached to different GPIO pins, but they must be indexed in the
+                list according to the above diagram.
+            period (float):
+                The time (in seconds) for a complete passive/angry cycle.
+                Default is 10.0 seconds.
+            duty_cycle (float):
+                The fraction (between 0 and 1) of the time the bee face should
+                be "angry". Default is 0.5 (equal times angry and passive).
+        """
+        super().__init__(pixels)
+        if len(self.pixels) != 12:
+            raise ValueError("This animation requires exactly 12 pixels.")
+        self.period = period
+        self.duty_cycle = duty_cycle
+
+    def render(self, current_time: float) -> None:
+        raise NotImplementedError
