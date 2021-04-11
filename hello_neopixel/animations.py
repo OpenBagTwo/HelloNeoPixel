@@ -169,9 +169,9 @@ class BeeFace(Animation):
     | YL | YL | YL | YL | YL |        | YL | YL | YL | YL | YL |
     | YL | BK | YL | BL | YL |        | YL | BK | YL | BL | YL |
     | YL | YL | YL | YL | YL |        | YL | YL | YL | YL | YL |
-    | BK | BL | YL | BL | BK |        | RD | WT | YL | WT | RD |
+    | BK | BL | YL | BL | BK |        | YL | YL | YL | YL | YL |
+    | BK | BK | YL | BK | BK |        | RD | WT | YL | WT | RD |
     | BK | BK | YL | BK | BK |        | RD | RD | YL | RD | RD |
-    | BK | BK | YL | BK | BK |        | YL | YL | YL | YL | YL |
     + -- + -- + -- + -- + -- +        + -- + -- + -- + -- + -- +
 
     And thus, the LEDs need to be colored:
@@ -179,7 +179,7 @@ class BeeFace(Animation):
     Passive:
         [BK, BK, BK, BK, BK, BL, BL, BK, BK, BK, Bk, BK]
     Angry:
-        [YL, YL, RD, RD, RD, WT, WT, RD, RD, RD, YL, YL]
+        [RD, RD, RD, WT, YL, YL, YL, YL, WT, RD, RD, RD]
     """
 
     BLACK = (0, 0, 0)
@@ -190,7 +190,7 @@ class BeeFace(Animation):
 
     # take advantage of the fact that the cheeks are symmetric
     PASSIVE_CHEEK = (BLACK, BLACK, BLACK, BLACK, BLACK, BLUE)
-    ANGRY_CHEEK = (YELLOW, YELLOW, RED, RED, RED, WHITE)
+    ANGRY_CHEEK = (RED, RED, RED, WHITE, YELLOW, YELLOW)
 
     def __init__(
         self, pixels, period: float = 10.0, duty_cycle: float = 0.7
