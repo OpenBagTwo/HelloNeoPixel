@@ -103,7 +103,7 @@ class RandomCycle(Animation):
 
 
 def random_cycle(
-    light_strip,  # TODO: hint as NeoPixel without importing neopixel
+    light_strip,
     runtime: float = None,
     transition_time: float = 1.0,
     frame_rate: float = 60.0,
@@ -202,10 +202,10 @@ class BeeFace(Animation):
                 The pixels that will be used to render the animation. The can be
                 attached to different GPIO pins, but they must be indexed in the
                 list according to the above diagram.
-            period (float):
+            period (float, optional):
                 The time (in seconds) for a complete passive/angry cycle.
                 Default is 10.0 seconds.
-            duty_cycle (float):
+            duty_cycle (float, optional):
                 The fraction (between 0 and 1) of the time the bee face should
                 be "passive". Default is 0.7 (7s passive to 3s angry).
         """
@@ -225,3 +225,51 @@ class BeeFace(Animation):
         for i in range(6):
             self.pixels[i].set(cheek[i])
             self.pixels[11 - i].set(cheek[i])
+
+
+def bee_face(
+    light_strip,
+    runtime: float = None,
+    period: float = None,
+    duty_cycle: float = None,
+    frame_rate: float = 1,
+    clear_after: bool = True,
+) -> None:
+    """Display the bee cycle animation
+
+    Args:
+        light_strip (NeoPixel or list-like of Pixels):
+            The individually addressable light strip. If a NeoPixel is provided,
+            the assumption is that the animation should display on the first
+            twelve pixels, so if that's not what you want, you'll need to
+            generate your own Pixel list.
+        runtime (float, optional): how long the animation should run before
+                                   terminating (in seconds). If None is
+                                   specified, the animation will run
+                                   forever.
+        period (float, optional): The time (in seconds) for a complete
+                                  passive/angry cycle. Default is 10.0 seconds.
+        duty_cycle (float, optional): The fraction (between 0 and 1) of the time
+                                      the bee face should be "passive". Default
+                                      is 0.7 (7s passive to 3s angry).
+        frame_rate (float, optional): how many times per second to render the
+                                      animation. Default is 1 fps (this is not
+                                      a very dynamic animation).
+        clear_after (bool, optional): whether to turn off all the LED lights
+                                      once the animation ends. Default is True.
+
+    Returns:
+        None
+    """
+    if isinstance(light_strip[0], Pixel):
+        pixels = light_strip[:12]
+    else:
+        pixels = [Pixel(light_strip, i) for i in range(12)]
+
+    animation_kwargs = {}
+    if period is not None:
+        animation_kwargs["period"] = period
+    if duty_cycle is not None:
+        animation_kwargs["duty_cycle"] = duty_cycle
+    animation = BeeFace(pixels, **animation_kwargs)
+    run_animations([animation], runtime, frame_rate, clear_after)

@@ -39,21 +39,19 @@ def run_animations(
         while True:
             step_start_tick_us = utime.ticks_us()
             current_time = utime.ticks_diff(utime.ticks_ms(), start_time) / 1000
+            if current_time > runtime:
+                break
+
             for animation in animations:
                 animation.render(current_time)
 
             for light_strip in light_strips:
                 light_strip.write()
-            # TODO: see if uPython has math.nan
-            if (
-                runtime is not None
-                and current_time + step_time_us / 1e6 > runtime
-            ):
-                break
 
             compute_time_us = utime.ticks_us() - step_start_tick_us
             if compute_time_us < step_time_us:
                 utime.sleep_us(step_time_us - compute_time_us)
+
     finally:
         if clear_after:
             for pixel in pixels:
