@@ -190,7 +190,7 @@ class BeeFace(Animation):
 
     # take advantage of the fact that the cheeks are symmetric
     PASSIVE_CHEEK = (BLACK, BLACK, BLACK, BLACK, BLACK, BLUE)
-    ANGRY_CHEEK = (RED, RED, RED, WHITE, YELLOW, YELLOW)
+    ANGRY_CHEEK = (RED, RED, WHITE, RED, YELLOW, YELLOW)
 
     def __init__(
         self, pixels, period: float = 10.0, duty_cycle: float = 0.7
