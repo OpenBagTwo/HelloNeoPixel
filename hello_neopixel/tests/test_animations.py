@@ -9,7 +9,7 @@ from hello_neopixel.base import Pixel
 
 from .mockpixel import MockPixel
 
-__all__ = ["TestBlink", "TestRandomCycle"]
+__all__ = ["TestBlink", "TestRandomCycle", "TestBeeFace"]
 
 
 class TestBlink(TestCase):
@@ -166,6 +166,92 @@ class TestRandomCycle(TestCase):
             assert (
                 fake_neopixel.displayed_pixels[i] != blank
             ), "pixel {} was blanked".format(i)
+
+
+class TestBeeFace(TestCase):
+    def test_accepts_exactly_twelve_pixels(self):
+        light_strip = MockPixel(100)
+        another_light_strip = MockPixel(6)
+
+        test_cases = (
+            ("contiguous strip", (Pixel(light_strip, i) for i in range(12))),
+            (
+                "discontiguous strip",
+                (
+                    Pixel(light_strip, i)
+                    for i in (0, 1, 3, 8, 12, 16, 19, 50, 32, 6, 99, 42)
+                ),
+            ),
+            (
+                "separate strips",
+                [Pixel(light_strip, i) for i in range(6)]
+                + [Pixel(another_light_strip, 5 - i) for i in range(6)],
+            ),
+            ("repeated_pixels", [Pixel(light_strip, 0)] * 12),
+        )
+
+        for case_name, pixel_list in test_cases:
+            try:
+                bee_face = ani.BeeFace(pixel_list)
+                mismatches = []
+                for i, pixel in enumerate(pixel_list):
+                    if bee_face.pixels[i] is not pixel:
+                        mismatches.append(i)
+            except Exception as error:
+                raise AssertionError(
+                    "Could not create animation using {}".format(case_name)
+                ) from error
+
+            if len(mismatches) > 0:
+                raise AssertionError(
+                    "Pixels {} on {} did not get correctly assigned".format(
+                        mismatches, case_name
+                    )
+                )
+
+    def test_raises_when_the_wrong_number_of_pixels_is_provided(self):
+        light_strip = MockPixel(100)
+
+        for n_pixels in (0, 11, 13, 100):
+            self.assertRaises(
+                ValueError,
+                ani.BeeFace,
+                [Pixel(light_strip, i) for i in range(n_pixels)],
+            )
+
+    def test_that_the_following_tests_wont_always_pass(self):
+        """gotta love meta-tests..."""
+        self.assertNotEqual(
+            ani.BeeFace.ANGRY_CHEEK[0], ani.BeeFace.PASSIVE_CHEEK[0]
+        )
+
+    def test_works_after_a_ton_of_cycles(self):
+        light_strip = MockPixel(12)
+        bee_face = ani.BeeFace([Pixel(light_strip, i) for i in range(12)])
+
+        bee_face.render(282.3)
+        self.assertEqual(light_strip[0], ani.BeeFace.PASSIVE_CHEEK[0])
+        self.assertEqual(light_strip[11], ani.BeeFace.PASSIVE_CHEEK[0])
+        bee_face.render(78927.9)
+        self.assertEqual(light_strip[0], ani.BeeFace.ANGRY_CHEEK[0])
+        self.assertEqual(light_strip[11], ani.BeeFace.ANGRY_CHEEK[0])
+
+    def test_can_have_a_custom_period(self):
+        light_strip = MockPixel(12)
+        ani.BeeFace(
+            [Pixel(light_strip, i) for i in range(12)], period=100
+        ).render(60.9)
+        self.assertEqual(light_strip[0], ani.BeeFace.PASSIVE_CHEEK[0])
+        self.assertEqual(light_strip[11], ani.BeeFace.PASSIVE_CHEEK[0])
+
+    def test_can_have_a_custom_duty_cycle(self):
+        light_strip = MockPixel(12)
+        ani.BeeFace(
+            [Pixel(light_strip, i) for i in range(12)], duty_cycle=0.1
+        ).render(1.8)
+
+        self.assertEqual(light_strip[0], ani.BeeFace.ANGRY_CHEEK[0])
+        self.assertEqual(light_strip[11], ani.BeeFace.ANGRY_CHEEK[0])
 
 
 if __name__ == "__main__":

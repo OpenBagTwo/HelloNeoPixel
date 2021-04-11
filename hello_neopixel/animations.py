@@ -189,11 +189,11 @@ class BeeFace(Animation):
     YELLOW = (80, 60, 0)
 
     # take advantage of the fact that the cheeks are symmetric
-    PASSIVE_CHEEK = (*[BLACK] * 5, BLUE)
-    ANGRY_CHEEK = (*[YELLOW] * 2, *[RED] * 3, WHITE)
+    PASSIVE_CHEEK = (BLACK, BLACK, BLACK, BLACK, BLACK, BLUE)
+    ANGRY_CHEEK = (YELLOW, YELLOW, RED, RED, RED, WHITE)
 
     def __init__(
-        self, pixels, period: float = 10.0, duty_cycle: float = 0.5
+        self, pixels, period: float = 10.0, duty_cycle: float = 0.7
     ) -> None:
         """Initialize the animation
 
@@ -207,7 +207,7 @@ class BeeFace(Animation):
                 Default is 10.0 seconds.
             duty_cycle (float):
                 The fraction (between 0 and 1) of the time the bee face should
-                be "angry". Default is 0.5 (equal times angry and passive).
+                be "passive". Default is 0.7 (7s passive to 3s angry).
         """
         super().__init__(pixels)
         if len(self.pixels) != 12:
@@ -216,4 +216,12 @@ class BeeFace(Animation):
         self.duty_cycle = duty_cycle
 
     def render(self, current_time: float) -> None:
-        raise NotImplementedError
+        cycle_point = (current_time % self.period) / self.period
+        if cycle_point < self.duty_cycle:
+            cheek = self.PASSIVE_CHEEK
+        else:
+            cheek = self.ANGRY_CHEEK
+
+        for i in range(6):
+            self.pixels[i].set(cheek[i])
+            self.pixels[11 - i].set(cheek[i])
