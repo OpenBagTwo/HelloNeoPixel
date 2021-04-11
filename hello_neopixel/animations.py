@@ -183,10 +183,10 @@ class BeeFace(Animation):
     """
 
     BLACK = (0, 0, 0)
-    WHITE = (50, 50, 50)
-    RED = (150, 0, 0)
+    WHITE = (40, 40, 40)
+    RED = (100, 0, 0)
     BLUE = (10, 70, 70)
-    YELLOW = (80, 60, 0)
+    YELLOW = (72, 54, 0)
 
     # take advantage of the fact that the cheeks are symmetric
     PASSIVE_CHEEK = (BLACK, BLACK, BLACK, BLACK, BLACK, BLUE)
