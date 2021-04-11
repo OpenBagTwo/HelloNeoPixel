@@ -39,7 +39,7 @@ def run_animations(
         while True:
             step_start_tick_us = utime.ticks_us()
             current_time = utime.ticks_diff(utime.ticks_ms(), start_time) / 1000
-            if current_time > runtime:
+            if runtime is not None and current_time > runtime:
                 break
 
             for animation in animations:
