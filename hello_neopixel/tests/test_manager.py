@@ -116,7 +116,7 @@ class TestRunAnimations(TestCase):
             [Pixel(light_strip, 0)], render_time_ms=50
         )
         manager.run_animations(
-            [animation], runtime=0.301, frame_rate=200, clear_after=False
+            [animation], runtime=0.325, frame_rate=200, clear_after=False
         )
         self.assertEqual(len(light_strip.write_log), 7)
 
