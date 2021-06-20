@@ -273,3 +273,42 @@ def bee_face(
         animation_kwargs["duty_cycle"] = duty_cycle
     animation = BeeFace(pixels, **animation_kwargs)
     run_animations([animation], runtime, frame_rate, clear_after)
+
+
+class Fireball(Animation):
+    """An animation to use for a Minecraft ghast's mouth shooting a fireball
+
+    Attributes:
+        trigger_time (float or None): the last time a fireball was triggered
+    """
+
+    keyframes = (
+        (0.0, (128, 0, 0)),  # use angry as a start point
+        (0.5, (255, 255, 204)),  # white hot
+        (1.5, (204, 102, 0)),  # cool down
+        (2.0, (0, 0, 0)),  # calm again
+    )
+
+    def __init__(self, pixel: Pixel) -> None:
+        """Initialize the animation
+
+        Args:
+            pixel (Pixel):
+                the pixel that will be used to render the animation (that is,
+                the one placed in the ghast's mouth)
+        """
+        super().__init__((pixel,))
+        self._pixel = self.pixels[0]
+        self.trigger_time = None
+
+    def render(self, current_time: float) -> None:
+        if self.trigger_time is None or current_time < self.trigger_time:
+            return
+        animation_time = current_time - self.trigger_time
+        for idx, (key_time, key_color) in enumerate(self.keyframes[1:]):
+            if animation_time < key_time:
+                old_time, old_color = self.keyframes[idx]
+                progress = (animation_time - old_time) / (key_time - old_time)
+                self._pixel.set(utils.crossfade(old_color, key_color, progress))
+                return
+        self._pixel.set(self.keyframes[-1][1])

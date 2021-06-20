@@ -1,7 +1,7 @@
 """Utilities for use in the main script"""
 
 
-def convert_hue_to_rgb(hue: int) -> tuple:
+def convert_hue_to_rgb(hue: float) -> tuple:
     """Convert an HSV color of max saturation and brightness to its RGB
     representation
 
@@ -9,7 +9,7 @@ def convert_hue_to_rgb(hue: int) -> tuple:
         Formula taken from https://en.wikipedia.org/wiki/HSL_and_HSV#HSV_to_RGB
 
     Args:
-        hue (int): The hue value, in degrees
+        hue (float): The hue value, in degrees
 
     Returns:
         tuple of three ints: the RGB tuple corresponding to the given hue at
@@ -37,7 +37,7 @@ def convert_hue_to_rgb(hue: int) -> tuple:
     except TypeError:
         pass
 
-    raise ValueError("Hue must be an int between 0 and 360 (inclusive)")
+    raise ValueError("Hue must be a float between 0 and 360 (inclusive)")
 
 
 def crossfade(old_color: tuple, new_color: tuple, progress: float) -> tuple:
