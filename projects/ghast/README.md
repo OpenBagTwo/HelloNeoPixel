@@ -49,6 +49,8 @@ and can be triggered to shoot fireballs.
 1. Flash ESP32
 1. Follow setup instructions from project root to install
 HelloNeoPixel
+1. Download ghast sounds from somewhere
+1. Convert ghast sounds to mp3 with specified order
 1. Download and deploy blynklib_mp.py
 1. Create the above blynk app and then get the auth key
 1. Create a file called secrets.py and set auth creds for your wifi and blynk
