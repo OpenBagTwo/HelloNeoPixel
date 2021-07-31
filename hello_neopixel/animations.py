@@ -299,10 +299,10 @@ class Fireball(Animation):
         """
         super().__init__((pixel,))
         self._pixel = self.pixels[0]
-        self.trigger_time = None
+        self.trigger_time = 1e99
 
     def render(self, current_time: float) -> None:
-        if self.trigger_time is None or current_time < self.trigger_time:
+        if current_time < self.trigger_time:
             return
         animation_time = current_time - self.trigger_time
         for idx, (key_time, key_color) in enumerate(self.keyframes[1:]):
