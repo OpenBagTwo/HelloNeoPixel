@@ -142,3 +142,6 @@ cython_debug/
 
 # folder for demo files
 scratch
+
+# secrets
+secrets.py
