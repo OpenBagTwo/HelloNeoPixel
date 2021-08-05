@@ -1,13 +1,14 @@
 """Code for interacting with the DFPlayer DFMini SD MP3 player module. Specs
 and protocol information are here:
 https://wiki.dfrobot.com/DFPlayer_Mini_SKU_DFR0299"""
+import blynklib_mp as blynklib
 import machine
 import urandom
 import utime
 
-import blynklib_mp as blynklib
 from hello_neopixel.animations import Fireball
 from hello_neopixel.base import Pixel
+from hello_neopixel.manager import run_animations
 
 # these are the track numbers (explicitly "00x.mp3" / "0xx.mp3") as they exist
 # on my SD card. Adjust if your numberings differ.
@@ -93,7 +94,32 @@ def play_fireball(uart: machine.UART) -> None:
 
 
 class Ghast:
-    """Runner for the ghast animation and sound effects
+    """Runner for the ghast animation, sound effects and app communication.
+
+    The ghast has two modes: passive (is_angry = False) and angry
+    (is_angry = True).
+
+    While passive, its eyes and mouth will not be illuminated upon calling
+    update_leds() and play_sound() will choose from one of the passive
+    ghast "moans."
+
+    In angry mode, its eyes and mouth will illuminate red upon calling
+    update_leds(), and play_sound() will play its shriek ("charge").
+
+    If launch_fireball() is called, the "fireball" launch sound will play,
+    and the fireball animation will run to completion.
+
+    While this all can be orchestrated via console, the intent is to
+    connect the ghast to Blynk via register_app() and then execute run(), which
+    will allow the connected Blynk app to control the ghast over wifi.
+
+    The app-controlled behavior is for:
+      - switching the ghast from passive to angry to immediately trigger a
+        shriek
+      - the ghast to "calm down" (switch from angry to passive) after the
+        fireball is launched
+      - the ghast to be able to launch fireballs in passive mode, which is,
+        admittedly, not true to the game.
 
     Attributes:
         eyes (list-like of Pixels):
@@ -105,11 +131,30 @@ class Ghast:
         is_angry (bool):
             True = ghast is angry
             False = ghast is passive
-
-
+        current_time (float): time (in seconds) since starting run()
+        calm_after (bool): set to True after a fireball launch to tell
+                           the program to set the ghast back to passive
+                           after the fireball animation completes
+        calm_ui (bool): flag to update the blynk app's UI to passive (and
+                        ignore it if the toggle in the UI is still set to
+                        angry)
+        next_sound_at (float): time (in seconds) when the ghast will next
+                               play a sound
+        fireball (ani.Animation): the fireball animation
+        blynk_app (Blynk): the Blynk object for communicating with the app UI
     """
 
     def __init__(self, eyes, mouth: Pixel, uart: machine.UART):
+        """Initialize a ghast
+
+        Args:
+            eyes (Pixel or list of Pixels):
+                The pixel(s) for the eyes
+            mouth (Pixel):
+                The pixel for the mouth
+            uart (machine.UART):
+                The UART controller for interacting with the sound card
+        """
         if isinstance(eyes, Pixel):
             self.eyes = (eyes,)
         self.mouth = mouth
@@ -123,6 +168,25 @@ class Ghast:
         self.fireball = Fireball(self.mouth)
 
     def register_app(self, blynk_app: blynklib.Blynk):
+        """Connect the ghast to Blynk
+
+        Args:
+            blynk_app (Blynk):
+                the Blynk object for communicating with the app UI
+
+        Returns:
+            None
+
+        Notes:
+            The Blynk app should consist of:
+            - a switch button for toggling between passive (0) and active (1)
+              connected to virtual pin V0
+            - a push button (0/1) for triggering a fireball launch connected
+              to virtual pin V1
+            - a Level V indicator for displaying the fireball cooldown time,
+              with values ranging from 0 to 1023, connected to virtual pin V2
+        """
+
         @blynk_app.handle_event("write V0")
         def update_ghast_mood(pin, value):
             if int(value[0]) == 1:
@@ -161,6 +225,12 @@ class Ghast:
         self.blynk_app = blynk_app
 
     def update_leds(self):
+        """Update and display the new colors values for the LEDs based on the
+        ghast's mood and where we are in the fireball animation
+
+        Returns:
+            None
+        """
         pixels = {*self.eyes, self.mouth}
         light_strips = {pixel.light_strip for pixel in pixels}
         if self.is_angry:
@@ -172,18 +242,59 @@ class Ghast:
             light_strip.write()
 
     def play_sound(self):
+        """Play a ghast sound depending on its mood
+
+        Returns:
+            None
+        """
         if self.is_angry:
             play_angry(self.uart)
         else:
             play_passive(self.uart)
 
+    def launch_fireball(self, frame_rate: float = 60.0):
+        """Run through the fireball animation
+
+        Args:
+           frame_rate (float, optional):
+                how many times per second to render the animations.
+                Default is 60 fps.
+
+        Returns:
+            None
+        """
+        self.fireball.trigger_time = 0.0  # runner will use its own clock
+        play_fireball(self.uart)
+        run_animations([self.fireball], 2.0, frame_rate=frame_rate)
+
     def run(
         self,
         runtime: float = None,
-        frame_rate: float = 60.0,
+        frame_rate: float = 15.0,
         sound_interval: float = 5.0,
         clear_after: bool = False,
     ):
+        """Connect the ghast to Blynk so it can be controlled via app
+
+        Args:
+            runtime (float, optional):
+                how long to stay connected. Default is forever (or until
+                the microcontroller is interrupted or restarted).
+            frame_rate (float, optional):
+                how many times per second to render the animations and
+                communicate with Blynk. Default is 15 fps, which may or may
+                not be feasible based on Blynk, your internet connection or
+                the microcontroller's hardware.
+            sound_interval (float, optional):
+                how many seconds should elapse between the ghast playing a
+                sound (in the absence of external triggers). Default is 5.0.
+            clear_after (bool, optional):
+                whether to turn off all the LED lights once the run ends.
+                Default is True.
+
+        Returns:
+            None
+        """
         try:
             self.blynk_app.connect()
         except AttributeError:
