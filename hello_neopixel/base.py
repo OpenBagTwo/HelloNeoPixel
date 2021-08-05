@@ -28,8 +28,7 @@ class Pixel:
     def __init__(
         self, light_strip, index: int, blank_value: tuple = (0, 0, 0)
     ) -> None:
-        """Args:
-
+        """
         Args:
             light_strip (NeoPixel): the light strip containing the pixel
             index (int): the index of the LED on the light strip
