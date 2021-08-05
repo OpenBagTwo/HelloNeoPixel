@@ -1,5 +1,7 @@
-"""Code for interacting with the DFPlayer DFMini SD MP3 player module. Specs
-and protocol information are here:
+"""Logic for controlling the ghast.
+
+Code for interacting with the DFPlayer DFMini SD MP3 player module is baed on
+specs and protocol information found here:
 https://wiki.dfrobot.com/DFPlayer_Mini_SKU_DFR0299"""
 import blynklib_mp as blynklib
 import machine
