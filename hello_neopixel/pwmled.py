@@ -1,19 +1,27 @@
 """NeoPixel-compatible abstraction for controlling non-addressable LEDs"""
-from machine import PWM, Pin
+try:
+    from machine import PWM, Pin
+
+    def _convert_to_pwm(pin):
+        if isinstance(pin, None):
+            return None
+        if isinstance(pin, int):
+            pin = Pin(pin)
+        if isinstance(pin, Pin):
+            pin = PWM(pin, freq=20000, duty=0)
+        if not isinstance(pin, PWM):
+            message = "{pin} is not a valid pin".format(pin=repr(pin))
+            raise ValueError(message)
+
+
+except ImportError:
+
+    def _convert_to_pwm(pin):
+        """Pass-through for testing on Unix micropython"""
+        return pin
+
 
 from .base import Pixel
-
-
-def _convert_to_pwm(pin):
-    if isinstance(pin, None):
-        return None
-    if isinstance(pin, int):
-        pin = Pin(pin)
-    if isinstance(pin, Pin):
-        pin = PWM(pin, freq=20000, duty=0)
-    if not isinstance(pin, PWM):
-        message = "{pin} is not a valid pin".format(pin=repr(pin))
-        raise ValueError(message)
 
 
 def _validate_calibration_matrix(calibration):
@@ -49,11 +57,21 @@ class RGBLED:
                     duty[i] = sum(4 * calibration[i][j] * value[j])
 
         """
-        self._channels = tuple(_convert_to_pwm(pin) for pin in pins)
-        if len(self._channels) != 3:
+        try:
+            self._channels = tuple(_convert_to_pwm(pin) for pin in pins)
+        except TypeError:
+            message = (
+                "The main constructor requires you to provide separate"
+                " pins for the R, G and B channels."
+                "\n    For monochrome LEDs, try the factory methods."
+            )
+            raise TypeError(message)
+
+        n_channels = len(self._channels)
+        if n_channels != 3:
             message = (
                 "This class does not support {n_channels}-channel LEDs".format(
-                    n_channels=len(self._channels)
+                    n_channels=n_channels
                 )
             )
             raise NotImplementedError(message)
