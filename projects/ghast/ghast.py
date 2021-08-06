@@ -14,8 +14,8 @@ from hello_neopixel.manager import run_animations
 
 # these are the track numbers (explicitly "00x.mp3" / "0xx.mp3") as they exist
 # on my SD card. Adjust if your numberings differ.
-ANGRY_TRACK = 3  # charge.ogg
-FIRE_TRACK = 5  # fireball4.ogg
+ANGRY_TRACK = 15  # charge.ogg
+FIRE_TRACK = 13  # fireball4.ogg
 PASSIVE_TRACKS = (6, 7, 8, 9, 10, 11, 12)  # moan1.ogg - moan7.ogg
 
 
@@ -233,7 +233,9 @@ class Ghast:
         Returns:
             None
         """
-        pixels = {*self.eyes, self.mouth}
+        pixels = set(self.eyes)
+        pixels.add(self.mouth)
+
         light_strips = {pixel.light_strip for pixel in pixels}
         if self.is_angry:
             for pixel in pixels:

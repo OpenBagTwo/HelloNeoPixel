@@ -3,7 +3,7 @@ try:
     from machine import PWM, Pin
 
     def _convert_to_pwm(pin):
-        if isinstance(pin, None):
+        if pin is None:
             return None
         if isinstance(pin, int):
             pin = Pin(pin)
