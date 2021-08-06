@@ -118,8 +118,6 @@ class Ghast:
     The app-controlled behavior is for:
       - switching the ghast from passive to angry to immediately trigger a
         shriek
-      - the ghast to "calm down" (switch from angry to passive) after the
-        fireball is launched
       - the ghast to be able to launch fireballs in passive mode, which is,
         admittedly, not true to the game.
 
@@ -134,12 +132,6 @@ class Ghast:
             True = ghast is angry
             False = ghast is passive
         current_time (float): time (in seconds) since starting run()
-        calm_after (bool): set to True after a fireball launch to tell
-                           the program to set the ghast back to passive
-                           after the fireball animation completes
-        calm_ui (bool): flag to update the blynk app's UI to passive (and
-                        ignore it if the toggle in the UI is still set to
-                        angry)
         next_sound_at (float): time (in seconds) when the ghast will next
                                play a sound
         fireball (ani.Animation): the fireball animation
@@ -163,8 +155,6 @@ class Ghast:
         self.uart = uart
         self.is_angry = False
         self.current_time = 0.0
-        self.calm_after = False
-        self.calm_ui = False
         self.next_sound_at = 0.0
 
         self.fireball = Fireball(self.mouth)
@@ -194,35 +184,24 @@ class Ghast:
             if int(value[0]) == 1:
                 if not self.is_angry:
                     play_angry(self.uart)
-                if not self.calm_ui:
-                    self.is_angry = True
-            else:
+                self.is_angry = True
+            elif int(value[0]) == 0:
                 self.is_angry = False
-
-        @blynk_app.handle_event("read V0")
-        def calm_ghast(pin):
-            if self.calm_ui:
-                blynk_app.virtual_write(pin, 0)
-                self.calm_ui = False
 
         @blynk_app.handle_event("write V1")
         def launch_fireball(pin, value):
             if int(value[0]) == 1:
                 self.fireball.trigger_time = self.current_time
                 play_fireball(self.uart)
-                self.calm_after = True
 
         @blynk_app.handle_event("read V2")
         def render_cooldown(pin):
-            progress = (self.current_time - self.fireball.trigger_time) / 2000
+            progress = (self.current_time - self.fireball.trigger_time) / 2.0
             if 0 < progress < 1:
                 progress = int(1024 * (1.0 - progress))
                 blynk_app.virtual_write(pin, progress)
             else:
-                if self.calm_after and self.is_angry:
-                    self.is_angry = False
-                    self.calm_ui = True
-                    self.calm_after = False
+                blynk_app.virtual_write(pin, 0)
 
         self.blynk_app = blynk_app
 
