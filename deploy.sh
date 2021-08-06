@@ -46,7 +46,5 @@ if [ -z "$project" ]; then
 fi
 cd ../../projects/"$project"
 for f in *.py; do
-  if [ $f != "__init__.py" ]; then
-    ampy --port "$port" put $f
-  fi
+  ampy --port "$port" put $f
 done
