@@ -11,11 +11,13 @@ from neopixel import NeoPixel
 
 from hello_neopixel import RGBLED, Pixel
 
-EYES_GPIO = 19
+EYES_GPIOS = (18, 19)
 MOUTH_GPIO = 21
 UART_BUS = 2
 mouth = Pixel(NeoPixel(Pin(MOUTH_GPIO), 1), 0)
-eyes = RGBLED.red((Pin(EYES_GPIO))).to_pixel()
+eyes = [
+    RGBLED.red((Pin(pin_num, Pin.OUT))).to_pixel() for pin_num in EYES_GPIOS
+]
 uart = UART(2, baudrate=9600)  # Using RX2 / TX2
 
 sure_shot_sally = Ghast(eyes, mouth, uart)

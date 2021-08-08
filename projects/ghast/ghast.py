@@ -150,7 +150,8 @@ class Ghast:
                 The UART controller for interacting with the sound card
         """
         if isinstance(eyes, Pixel):
-            self.eyes = (eyes,)
+            eyes = (eyes,)
+        self.eyes = eyes
         self.mouth = mouth
         self.uart = uart
         self.is_angry = False
