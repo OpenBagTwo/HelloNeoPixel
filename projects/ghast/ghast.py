@@ -216,9 +216,8 @@ class Ghast:
         pixels.add(self.mouth)
 
         light_strips = {pixel.light_strip for pixel in pixels}
-        if self.is_angry:
-            for pixel in pixels:
-                pixel.set((128, 0, 0))
+        for pixel in pixels:
+            pixel.set((128 * self.is_angry, 0, 0))
         if 0 <= self.current_time - self.fireball.trigger_time < 2.0:
             self.fireball.render(self.current_time)
         for light_strip in light_strips:
