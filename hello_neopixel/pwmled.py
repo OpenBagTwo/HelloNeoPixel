@@ -12,6 +12,7 @@ try:
         if not isinstance(pin, PWM):
             message = "{pin} is not a valid pin".format(pin=repr(pin))
             raise ValueError(message)
+        return pin
 
 
 except ImportError:
