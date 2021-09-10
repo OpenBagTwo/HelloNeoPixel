@@ -1,0 +1,24 @@
+# development environment for the Raspberry Pi
+name: espy
+dependencies:
+  - python=3
+  - ipython
+  - jupyter
+  - pre-commit
+  - black
+  - isort
+  - flake8
+  - mypy
+  - pytest
+  - pytest-cov
+  - pip
+  - docopt
+  # TODO: add GPIO libraries
+  # below are needed by ampy
+  - click
+  - python-dotenv
+  - pip:
+      - adafruit-ampy>=1.0.5,<1.1
+      - esptool
+      # TODO: add pytest-subtests once this is resolved:
+      # https://github.com/pytest-dev/pytest-subtests/issues/26
