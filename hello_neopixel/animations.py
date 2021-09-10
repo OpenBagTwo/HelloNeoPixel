@@ -1,17 +1,8 @@
 """Library of animations"""
-import urandom
-
 from . import utils
+from ._compat import urandom
 from .base import Animation, Pixel
 from .manager import run_animations
-
-try:
-    random = urandom.random
-except AttributeError:
-    """Workaround for MicroPython on the desktop not having random.random()"""
-    random = (
-        lambda: urandom.getrandbits(8) / 2 ** 8
-    )  # way more resolution than we need
 
 
 class Blink(Animation):
@@ -82,7 +73,7 @@ class RandomCycle(Animation):
         self.colors = []
 
         for i in range(len(pixels)):
-            hue = int(random() * 360)
+            hue = int(urandom.random() * 360)
             rgb = utils.convert_hue_to_rgb(hue)
             self.colors.append(rgb)
 

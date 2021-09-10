@@ -1,5 +1,5 @@
 """Recipes for choreographing animations"""
-import utime
+from ._compat import utime
 
 
 def run_animations(

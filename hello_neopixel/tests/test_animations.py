@@ -2,9 +2,8 @@
 Of course, the best test of any animation is how it looks on the strip."""
 from unittest import TestCase, main
 
-import utime
-
 from hello_neopixel import animations as ani
+from hello_neopixel._compat import utime
 from hello_neopixel.base import Pixel
 
 from .mockpixel import MockPixel

@@ -1,11 +1,10 @@
 """Tests for the animation managers"""
 from unittest import TestCase, main
 
-import utime
-
 from hello_neopixel import Animation, Pixel
 from hello_neopixel import animations as ani
 from hello_neopixel import manager
+from hello_neopixel._compat import utime
 
 from .mockpixel import MockPixel
 
